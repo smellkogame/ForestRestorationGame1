@@ -10,6 +10,7 @@ const celebration = document.getElementById('celebration');
 const rainContainer = document.querySelector('.rain');
 const snowContainer = document.querySelector('.snow');
 const newsText = document.getElementById('news-text');
+const fullscreenPrompt = document.getElementById('fullscreen-prompt');
 
 let level = 1;
 let seedlings = 5; // Начальное количество саженцев
@@ -133,16 +134,22 @@ function loadProgress() {
     }
     startLevel();
     updateNews();
+    showFullscreenPrompt();
+}
+
+// Показать запрос на полноэкранный режим
+function showFullscreenPrompt() {
+    fullscreenPrompt.classList.remove('hidden');
+    document.addEventListener('click', handleFullscreenClick, { once: true });
+}
+
+// Обработка клика для полноэкранного режима
+function handleFullscreenClick() {
+    fullscreenPrompt.classList.add('hidden');
     enterFullScreen();
 }
 
-// Сохранение прогресса
-function saveProgress() {
-    const data = { level, seedlings, coins, score, comboMultiplier };
-    localStorage.setItem('forestGameProgress', JSON.stringify(data));
-}
-
-// Автоматический полный экран
+// Полный экран
 function enterFullScreen() {
     if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullScreenElement && !document.msFullScreenElement) {
         if (document.documentElement.requestFullscreen) {
@@ -155,6 +162,12 @@ function enterFullScreen() {
             document.documentElement.msRequestFullscreen();
         }
     }
+}
+
+// Сохранение прогресса
+function saveProgress() {
+    const data = { level, seedlings, coins, score, comboMultiplier };
+    localStorage.setItem('forestGameProgress', JSON.stringify(data));
 }
 
 // Инициализация уровня
