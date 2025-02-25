@@ -151,7 +151,14 @@ function startGame() {
     gameContainer.classList.remove('hidden');
     menuContainer.classList.add('hidden');
     settingsContainer.classList.add('hidden');
-    startLevel(); // Начинаем игру сразу
+    const fullscreenPromise = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+    if (fullscreenPromise) {
+        startLevel(); // Начинаем игру, если уже в полноэкранном режиме
+    } else {
+        // Если полноэкранный режим заблокирован, начинаем игру в обычном режиме с уведомлением
+        startLevel();
+        showToast('Полноэкранный режим заблокирован. Включите вручную (F11 или меню браузера).');
+    }
 }
 
 // Показать настройки
@@ -184,8 +191,6 @@ function enterFullScreen() {
         } else if (document.documentElement.msRequestFullscreen) {
             document.documentElement.msRequestFullscreen();
         }
-    } else {
-        // Если уже в полноэкранном режиме, ничего не делаем
     }
 }
 
