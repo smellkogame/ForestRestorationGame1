@@ -2,11 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Для адаптации на мобильных -->
     <title>Лесовосстановление</title>
     <style>
         body {
             margin: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -19,18 +20,21 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%; /* Адаптивная ширина */
+            max-width: 600px; /* Ограничение ширины для ПК */
+        }
+        h1 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em; /* Адаптивный размер заголовка */
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(6, 60px);
             gap: 2px;
             margin: 20px auto;
         }
         .cell {
-            width: 60px;
-            height: 60px;
             border: 1px solid #ccc;
-            font-size: 30px;
+            font-size: 1.5em; /* Крупнее для мобильных */
             text-align: center;
             cursor: pointer;
             background-color: #d2b48c; /* Песок для неплодородной */
@@ -40,11 +44,24 @@
         }
         #info, #controls {
             margin: 10px 0;
+            font-size: 1em; /* Адаптивный размер текста */
         }
         progress {
-            width: 200px;
+            width: 80%;
             height: 20px;
             margin: 10px auto;
+        }
+        button {
+            padding: 8px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
         }
         #toast {
             position: fixed;
@@ -57,10 +74,79 @@
             border-radius: 5px;
             display: none;
             z-index: 1000;
+            font-size: 1em;
         }
-        button {
-            padding: 5px 15px;
-            cursor: pointer;
+
+        /* Медиа-запросы для адаптации */
+        @media screen and (min-width: 768px) { /* Планшеты и ПК */
+            .game-container {
+                max-width: 800px; /* Больше для ПК */
+                padding: 30px;
+            }
+            h1 {
+                font-size: 2em; /* Крупнее для ПК */
+            }
+            .grid {
+                grid-template-columns: repeat(6, 100px); /* Клетки побольше для удобства на ПК */
+            }
+            .cell {
+                width: 100px;
+                height: 100px;
+                font-size: 1.8em; /* Крупнее текст для ПК */
+            }
+            #info, #controls {
+                font-size: 1.2em; /* Крупнее текст для ПК */
+            }
+            button {
+                font-size: 1.1em;
+                padding: 10px 25px;
+            }
+        }
+
+        @media screen and (max-width: 767px) { /* Мобильные устройства */
+            .game-container {
+                width: 100%; /* На весь экран */
+                padding: 10px;
+                border-radius: 0; /* Убираем скругления на мобильных */
+                box-shadow: none; /* Убираем тень для полноэкранного вида */
+            }
+            .grid {
+                grid-template-columns: repeat(6, 60px); /* Меньшие клетки для мобильных */
+            }
+            .cell {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2em; /* Меньше текст для мобильных, но читаемо */
+            }
+            progress {
+                width: 90%;
+            }
+        }
+
+        @media screen and (min-width: 1920px) { /* Специально для 1920x1080 */
+            .game-container {
+                max-width: 1000px; /* Больше для большого экрана */
+                padding: 40px;
+            }
+            .grid {
+                grid-template-columns: repeat(6, 120px); /* Ещё крупнее клетки для 1920x1080 */
+            }
+            .cell {
+                width: 120px;
+                height: 120px;
+                font-size: 2em; /* Крупнее текст для большого экрана */
+            }
+            #info, #controls {
+                font-size: 1.5em; /* Крупнее текст для 1920x1080 */
+            }
+            button {
+                font-size: 1.3em;
+                padding: 12px 30px;
+            }
+            progress {
+                width: 70%;
+                height: 25px;
+            }
         }
     </style>
 </head>
@@ -68,7 +154,7 @@
     <div class="game-container">
         <h1>Лесовосстановление</h1>
         <div id="info">Уровень: 1 | Саженцев: 5 | Монеты: 0 | Очки: 0</div>
-        <progress id="levelProgress" value="0" max="4"></progress> <!-- Шкала прогресса, начальное значение для уровня 1 (нужно 4 дерева) -->
+        <progress id="levelProgress" value="0" max="4"></progress> <!-- Шкала прогресса для уровня 1 -->
         <div id="controls">
             <button onclick="buySeedlings()">Докупить саженцы (2 монеты за 1 саженец)</button>
         </div>
