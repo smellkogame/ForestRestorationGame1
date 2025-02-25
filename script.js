@@ -144,9 +144,11 @@ function showFullscreenPrompt() {
 }
 
 // Обработка клика для полноэкранного режима
-function handleFullscreenClick() {
-    fullscreenPrompt.classList.add('hidden');
-    enterFullScreen();
+function handleFullscreenClick(event) {
+    if (event.target.tagName !== 'BUTTON') { // Игнорируем клики на кнопки игры
+        fullscreenPrompt.classList.add('hidden');
+        enterFullScreen();
+    }
 }
 
 // Полный экран
