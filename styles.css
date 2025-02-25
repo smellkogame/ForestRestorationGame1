@@ -9,7 +9,7 @@ body {
     position: relative; /* Для анимаций дождя и снега */
 }
 
-.game-container {
+.menu-container, .game-container, .settings-container {
     text-align: center;
     background-color: #e8f5e9; /* Мягкий зелёный фон для тематики леса */
     padding: 20px;
@@ -21,10 +21,20 @@ body {
     margin: 15px; /* Отступы по краям для всех устройств */
 }
 
+.menu-container.hidden, .game-container.hidden, .settings-container.hidden {
+    display: none;
+}
+
 h1 {
+    margin: 0 0 20px 0;
+    font-size: 2em;
+    color: #1b5e20; /* Тёмно-зелёный для современного вида */
+}
+
+h2 {
     margin: 0 0 15px 0;
     font-size: 1.5em;
-    color: #1b5e20; /* Тёмно-зелёный для современного вида */
+    color: #1b5e20;
 }
 
 #current-level {
@@ -115,16 +125,23 @@ h1 {
     flex-wrap: wrap;
 }
 
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
 .news-container {
     margin: 10px 0;
     font-size: 0.9em;
     color: #333;
     background-color: rgba(255, 255, 255, 0.95); /* Более прозрачный белый фон */
-    padding: 5px 15px;
+    padding: 8px 15px; /* Увеличенные отступы */
     border-radius: 10px;
     max-width: 100%;
     overflow-x: hidden;
-    white-space: nowrap;
+    word-wrap: break-word; /* Позволяет переносить текст на следующую строку */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Лёгкая тень */
 }
 
@@ -160,16 +177,19 @@ progress::-moz-progress-bar {
 }
 
 button {
-    padding: 10px 20px;
-    font-size: 1em;
+    padding: 12px 25px;
+    font-size: 1.1em;
     cursor: pointer;
     border: none;
     border-radius: 10px;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Лёгкая тень */
+    background: linear-gradient(45deg, #4CAF50, #2e7d32); /* Градиент для кнопок меню и игры */
+    color: white;
 }
 
 button:hover {
+    background: linear-gradient(45deg, #2e7d32, #1b5e20); /* Тёмнее при наведении */
     transform: scale(1.05);
 }
 
@@ -204,23 +224,6 @@ button:hover {
 
 .fullscreen-prompt.hidden {
     display: none;
-}
-
-.fullscreen-prompt button {
-    padding: 10px 20px;
-    font-size: 1em;
-    cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.fullscreen-prompt button:hover {
-    background-color: #2e7d32;
-    transform: scale(1.05);
 }
 
 .loading {
@@ -268,6 +271,10 @@ button:hover {
     animation: fireworks 2s ease-out forwards;
 }
 
+.settings-container {
+    z-index: 1003;
+}
+
 .rain, .snow {
     position: fixed;
     top: 0;
@@ -309,12 +316,15 @@ button:hover {
 
 /* Медиа-запросы для адаптации */
 @media screen and (min-width: 768px) { /* Планшеты и ПК */
-    .game-container {
+    .game-container, .menu-container, .settings-container {
         max-width: 800px;
         padding: 30px;
         margin: 20px; /* Большие отступы для ПК */
     }
     h1 {
+        font-size: 2.5em;
+    }
+    h2 {
         font-size: 2em;
     }
     #current-level {
@@ -338,9 +348,13 @@ button:hover {
     #controls {
         gap: 20px;
     }
+    .menu-buttons button {
+        font-size: 1.2em;
+        padding: 15px 30px;
+    }
     .news-container {
         font-size: 1.1em;
-        padding: 8px 20px;
+        padding: 10px 20px;
     }
     button {
         font-size: 1.1em;
@@ -359,19 +373,21 @@ button:hover {
         padding: 25px 50px;
         font-size: 1.1em;
     }
-    .fullscreen-prompt button {
-        padding: 12px 25px;
-        font-size: 1.1em;
-    }
 }
 
 @media screen and (max-width: 767px) { /* Мобильные устройства */
-    .game-container {
+    .game-container, .menu-container, .settings-container {
         width: 100%;
         padding: 10px;
         border-radius: 0;
         box-shadow: none;
         margin: 5px; /* Меньшие отступы для мобильных */
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+    h2 {
+        font-size: 1.3em;
     }
     .grid {
         grid-template-columns: repeat(6, 60px);
@@ -394,9 +410,16 @@ button:hover {
     #controls {
         gap: 10px;
     }
+    .menu-buttons {
+        gap: 10px;
+    }
+    .menu-buttons button {
+        font-size: 1em;
+        padding: 10px 20px;
+    }
     .news-container {
         font-size: 0.8em;
-        padding: 4px 10px;
+        padding: 5px 10px;
         margin: 5px 0;
     }
     .cell.tree, .cell.small-tree, .cell.sapling {
@@ -412,17 +435,19 @@ button:hover {
         padding: 15px 25px;
         font-size: 0.9em;
     }
-    .fullscreen-prompt button {
-        padding: 8px 15px;
-        font-size: 0.9em;
-    }
 }
 
 @media screen and (min-width: 1920px) { /* Специально для 1920x1080 */
-    .game-container {
+    .game-container, .menu-container, .settings-container {
         max-width: 1000px;
         padding: 40px;
         margin: 30px; /* Большие отступы для большого экрана */
+    }
+    h1 {
+        font-size: 3em;
+    }
+    h2 {
+        font-size: 2.5em;
     }
     .grid {
         grid-template-columns: repeat(6, 120px);
@@ -443,9 +468,16 @@ button:hover {
     #controls {
         gap: 25px;
     }
+    .menu-buttons {
+        gap: 20px;
+    }
+    .menu-buttons button {
+        font-size: 1.3em;
+        padding: 18px 35px;
+    }
     .news-container {
         font-size: 1.2em;
-        padding: 10px 25px;
+        padding: 12px 25px;
     }
     button {
         font-size: 1.3em;
@@ -466,10 +498,6 @@ button:hover {
     }
     .fullscreen-prompt {
         padding: 30px 60px;
-        font-size: 1.2em;
-    }
-    .fullscreen-prompt button {
-        padding: 15px 30px;
         font-size: 1.2em;
     }
 }
@@ -533,4 +561,11 @@ button:hover {
 :fullscreen .news-container {
     font-size: 1em;
     padding: 5px 15px;
+}
+
+:-webkit-full-screen .menu-container,
+:-moz-full-screen .menu-container,
+:-ms-fullscreen .menu-container,
+:fullscreen .menu-container {
+    display: none; /* Скрываем меню в полноэкранном режиме */
 }

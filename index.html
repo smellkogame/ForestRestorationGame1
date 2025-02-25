@@ -7,7 +7,15 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="game-container">
+    <div class="menu-container hidden">
+        <h1>Лесовосстановление</h1>
+        <div class="menu-buttons">
+            <button onclick="startGame()">Играть</button>
+            <button onclick="showSettings()">Настройки</button>
+            <button onclick="exitGame()">Выход</button>
+        </div>
+    </div>
+    <div class="game-container hidden">
         <h1>Лесовосстановление</h1>
         <div id="current-level">Уровень: 1</div>
         <div id="info">
@@ -30,8 +38,12 @@
     <div class="rain"></div>
     <div class="snow"></div>
     <div id="fullscreen-prompt" class="fullscreen-prompt hidden">
-        <p>Нажмите здесь, чтобы войти в полный экран</p>
-        <button onclick="enterFullScreen()">Войти в полный экран</button>
+        <p>Нажмите здесь для полного экрана</p>
+    </div>
+    <div id="settings-container" class="settings-container hidden">
+        <h2>Настройки</h2>
+        <p>Настройки пока не реализованы. Нажмите, чтобы вернуться в меню.</p>
+        <button onclick="hideSettings()">Назад</button>
     </div>
 
     <script src="script.js"></script>
