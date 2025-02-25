@@ -15,7 +15,7 @@ let score = 0;
 const gridSize = 6;
 let gameState = [];
 
-// Звуковые эффекты (добавь файлы в assets/audio/)
+// Звуковые эффекты
 const plantSound = new Audio('assets/audio/plant.mp3');
 const growSound = new Audio('assets/audio/grow.mp3');
 const levelUpSound = new Audio('assets/audio/levelup.mp3');
@@ -57,7 +57,7 @@ function startLevel() {
                 cell.textContent = ''; // Пустая плодородная земля
             } else {
                 cell.classList.add('unfertile');
-                cell.textContent = '🏜'; // Неплодородная земля
+                cell.textContent = ''; // Пустая неплодородная земля с градиентом
             }
             cell.dataset.row = i;
             cell.dataset.col = j;
@@ -143,25 +143,40 @@ function levelUp() {
 // Празднование прохождения уровня
 function celebrateLevelUp() {
     celebration.classList.remove('hidden');
-    celebration.innerHTML = '<span>Уровень пройден! 🌲🌳🌴</span>';
-    // Фейерверк из деревьев
-    for (let i = 0; i < 10; i++) {
-        const tree = document.createElement('span');
-        tree.textContent = ['🌲', '🌳', '🌴'][Math.floor(Math.random() * 3)];
-        tree.style.left = `${Math.random() * 100}vw`;
-        tree.style.top = `${Math.random() * 100}vh`;
-        tree.style.animationDelay = `${Math.random() * 1}s`;
-        celebration.appendChild(tree);
+    celebration.innerHTML = '<span>Уровень пройден! ⭐</span>';
+    // Фейерверк из звёздочек
+    for (let i = 0; i < 20; i++) { // Увеличил количество частиц для эффектного фейерверка
+        const star = document.createElement('span');
+        star.textContent = '⭐';
+        star.style.left = `${Math.random() * 100}vw`;
+        star.style.top = `${Math.random() * 100}vh`;
+        star.style.animationDelay = `${Math.random() * 1}s`;
+        celebration.appendChild(star);
     }
-    // Вибрация для мобильных
+    // Мягкая вибрация на протяжении анимации (200 мс каждые 500 мс)
     if ('vibrate' in navigator) {
-        navigator.vibrate(200); // Мягкая вибрация на 200 мс
+        vibrateDuringFireworks();
     }
     setTimeout(() => {
         celebration.classList.add('hidden');
         celebration.innerHTML = '';
         startLevel();
     }, 3000); // 3 секунды на празднование
+}
+
+// Функция для вибрации во время фейерверка
+function vibrateDuringFireworks() {
+    let vibrationInterval = setInterval(() => {
+        if ('vibrate' in navigator) {
+            navigator.vibrate(200); // Мягкая вибрация 200 мс
+        }
+    }, 500); // Повтор каждые 500 мс
+    setTimeout(() => {
+        clearInterval(vibrationInterval); // Останавливаем вибрацию после 3 секунд
+        if ('vibrate' in navigator) {
+            navigator.vibrate(0); // Останавливаем вибрацию
+        }
+    }, 3000);
 }
 
 // Докупка саженцев за монеты
@@ -203,4 +218,4 @@ function updateInfo() {
 }
 
 // Старт игры
-loadProgress(); // Загружаем сохранённый прогресс
+loadProgress();

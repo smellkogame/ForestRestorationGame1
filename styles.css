@@ -62,7 +62,7 @@ h1 {
 }
 
 .unfertile {
-    background-color: #a67b5b; /* Неплодородная земля */
+    background: linear-gradient(45deg, #a67b5b, #8c6a4d, #7a5d3f); /* Градиент для неплодородной земли */
 }
 
 #info {
@@ -174,13 +174,13 @@ button:hover {
 
 .celebration span {
     position: absolute;
-    font-size: 1.5em;
+    font-size: 2em; /* Увеличенные звёздочки */
     animation: fireworks 2s ease-out forwards;
 }
 
 @keyframes fireworks {
     0% { opacity: 0; transform: translateY(0) scale(0); }
-    50% { opacity: 1; transform: translateY(-100px) scale(1); }
+    50% { opacity: 1; transform: translateY(-100px) scale(1.5); }
     100% { opacity: 0; transform: translateY(-200px) scale(0); }
 }
 
