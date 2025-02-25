@@ -10,7 +10,6 @@ const celebration = document.getElementById('celebration');
 const rainContainer = document.querySelector('.rain');
 const snowContainer = document.querySelector('.snow');
 const newsText = document.getElementById('news-text');
-const fullscreenPrompt = document.getElementById('fullscreen-prompt');
 const menuContainer = document.querySelector('.menu-container');
 const gameContainer = document.querySelector('.game-container');
 const settingsContainer = document.querySelector('.settings-container');
@@ -143,16 +142,16 @@ function showMenu() {
     menuContainer.classList.remove('hidden');
     gameContainer.classList.add('hidden');
     settingsContainer.classList.add('hidden');
-    fullscreenPrompt.classList.add('hidden');
 }
 
 // Начать игру
 function startGame() {
     loadProgress(); // Загружаем прогресс
+    enterFullScreen(); // Пытаемся войти в полноэкранный режим
     gameContainer.classList.remove('hidden');
     menuContainer.classList.add('hidden');
     settingsContainer.classList.add('hidden');
-    showFullscreenPrompt();
+    startLevel(); // Начинаем игру сразу
 }
 
 // Показать настройки
@@ -160,7 +159,6 @@ function showSettings() {
     menuContainer.classList.add('hidden');
     gameContainer.classList.add('hidden');
     settingsContainer.classList.remove('hidden');
-    fullscreenPrompt.classList.add('hidden');
 }
 
 // Скрыть настройки
@@ -172,21 +170,6 @@ function hideSettings() {
 // Выход из игры
 function exitGame() {
     window.close(); // Простая имитация выхода (зависит от браузера/устройства)
-}
-
-// Показать запрос на полноэкранный режим
-function showFullscreenPrompt() {
-    fullscreenPrompt.classList.remove('hidden');
-    document.addEventListener('click', handleFullscreenClick, { once: true });
-}
-
-// Обработка клика для полноэкранного режима
-function handleFullscreenClick(event) {
-    if (event.target.tagName !== 'BUTTON') { // Игнорируем клики на кнопки игры
-        fullscreenPrompt.classList.add('hidden');
-        enterFullScreen();
-        startLevel(); // Начинаем игру после входа в полный экран
-    }
 }
 
 // Полный экран
@@ -201,6 +184,8 @@ function enterFullScreen() {
         } else if (document.documentElement.msRequestFullscreen) {
             document.documentElement.msRequestFullscreen();
         }
+    } else {
+        // Если уже в полноэкранном режиме, ничего не делаем
     }
 }
 
