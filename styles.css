@@ -107,12 +107,22 @@ h1 {
 
 #controls {
     margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .news-container {
     margin: 10px 0;
     font-size: 0.9em;
     color: #333;
+    background-color: rgba(255, 255, 255, 0.9); /* Лёгкая прозрачность */
+    padding: 5px 10px;
+    border-radius: 5px;
+    max-width: 100%;
+    overflow-x: hidden; /* Предотвращаем перекрытие */
+    white-space: nowrap; /* Предотвращаем перенос строки */
 }
 
 .news-container strong {
@@ -133,11 +143,19 @@ button {
     padding: 8px 20px;
     font-size: 1em;
     cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
     border: none;
     border-radius: 5px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#fullscreen-btn {
+    background-color: #2196F3;
+    color: white;
+}
+
+#fullscreen-btn:hover {
+    background-color: #1976D2;
+    transform: scale(1.05);
 }
 
 button:hover {
@@ -270,9 +288,11 @@ button:hover {
     }
     #controls {
         font-size: 1.2em;
+        gap: 15px;
     }
     .news-container {
         font-size: 1.1em;
+        padding: 7px 15px;
     }
     button {
         font-size: 1.1em;
@@ -314,12 +334,17 @@ button:hover {
     progress {
         width: 90%;
     }
-    .cell.tree, .cell.small-tree, .cell.sapling {
-        animation: sway 2s infinite ease-in-out;
+    #controls {
+        font-size: 0.9em;
+        gap: 5px;
     }
     .news-container {
         font-size: 0.8em;
         margin: 5px 0;
+        padding: 3px 8px;
+    }
+    .cell.tree, .cell.small-tree, .cell.sapling {
+        animation: sway 2s infinite ease-in-out;
     }
     .rain.drop, .snow.flake {
         font-size: 1.2em;
@@ -352,10 +377,12 @@ button:hover {
     }
     #controls {
         font-size: 1.5em;
+        gap: 20px;
     }
     .news-container {
         font-size: 1.2em;
         margin: 15px 0;
+        padding: 10px 20px;
     }
     button {
         font-size: 1.3em;
@@ -374,4 +401,55 @@ button:hover {
     .celebration span {
         font-size: 3em;
     }
+}
+
+:-webkit-full-screen .game-container,
+:-moz-full-screen .game-container,
+:-ms-fullscreen .game-container,
+:fullscreen .game-container {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+}
+
+:-webkit-full-screen .grid,
+:-moz-full-screen .grid,
+:-ms-fullscreen .grid,
+:fullscreen .grid {
+    margin: 10px auto;
+}
+
+:-webkit-full-screen .cell,
+:-moz-full-screen .cell,
+:-ms-fullscreen .cell,
+:fullscreen .cell {
+    width: 80px;
+    height: 80px;
+}
+
+:-webkit-full-screen #info,
+:-moz-full-screen #info,
+:-ms-fullscreen #info,
+:fullscreen #info {
+    gap: 15px;
+}
+
+:-webkit-full-screen .counter-block,
+:-moz-full-screen .counter-block,
+:-ms-fullscreen .counter-block,
+:fullscreen .counter-block {
+    font-size: 1.1em;
+    min-width: 130px;
+    padding: 8px 12px;
+}
+
+:-webkit-full-screen progress,
+:-moz-full-screen progress,
+:-ms-fullscreen progress,
+:fullscreen progress {
+    width: 90%;
 }

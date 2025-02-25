@@ -10,6 +10,7 @@ const celebration = document.getElementById('celebration');
 const rainContainer = document.querySelector('.rain');
 const snowContainer = document.querySelector('.snow');
 const newsText = document.getElementById('news-text');
+const fullscreenBtn = document.getElementById('fullscreen-btn');
 
 let level = 1;
 let seedlings = 5; // Начальное количество саженцев
@@ -41,7 +42,7 @@ thunderSound.preload = 'auto';
 rainSound.preload = 'auto';
 blizzardSound.preload = 'auto';
 
-// Новости лесничества (увеличено в 8 раз, 80 новостей)
+// Новости лесничества
 const news = [
     "Учёные обнаружили новый вид редких деревьев в Амазонских джунглях!",
     "Международная организация по охране лесов объявила о посадке 1 миллиона деревьев в Африке.",
@@ -63,7 +64,7 @@ const news = [
     "В Южной Африке местные жители объединились для восстановления саванных лесов после засухи.",
     "Новая инициатива в Новой Зеландии направлена на восстановление лесов для редких птиц киви.",
     "В Японии проводится фестиваль посадки сакуры для укрепления лесных массивов.",
-    "Экологи Аргентины обнаружили новый вид орхидей в горных лесах Патагонии.",
+    "Экологи Аргентины обнаружили редкий вид орхидей в горных лесах Патагонии.",
     "В Индонезии началась масштабная кампания по защите дождевых лесов от вырубки.",
     "Норвегия инвестирует в проекты по восстановлению арктических лесов для сохранения оленей.",
     "В Перу запущена программа обучения местных жителей методам лесовосстановления.",
@@ -173,6 +174,7 @@ function startLevel() {
     updateInfo();
     saveProgress();
     startWeatherEvents();
+    ensureWeatherEvent(); // Гарантируем хотя бы одно погодное событие за уровень
 }
 
 // Генерация плодородных клеток
@@ -353,10 +355,47 @@ function startWeatherEvents() {
     weatherTimeout = setTimeout(checkWeather, 5000); // Проверяем погоду каждые 5 секунд
 }
 
+// Гарантируем хотя бы одно погодное событие за уровень
+function ensureWeatherEvent() {
+    const totalChecks = Math.ceil((60 * 1000) / 5000); // Количество проверок за минуту (примерное время уровня)
+    let eventTriggered = false;
+    let checkCount = 0;
+
+    const interval = setInterval(() => {
+        if (!eventTriggered && checkCount < totalChecks) {
+            const chance = Math.random();
+            if (chance < 0.40) { // 40% шанс
+                const eventType = Math.random() < 0.5 ? 'lightning' : 'frozen';
+                const fertileCells = gameState.flat().filter(cell => cell.fertile && (cell.content === 'sapling' || cell.content === 'small-tree'));
+                if (fertileCells.length > 0) {
+                    const randomCell = fertileCells[Math.floor(Math.random() * fertileCells.length)];
+                    const [row, col] = [randomCell.row, randomCell.col];
+                    const cell = grid.children[row * gridSize + col];
+                    if (eventType === 'lightning') {
+                        cell.textContent = '⚡';
+                        cell.classList.add('lightning');
+                        gameState[row][col].content = 'lightning';
+                        showRain();
+                    } else {
+                        cell.textContent = '❄';
+                        cell.classList.add('frozen');
+                        gameState[row][col].content = 'frozen';
+                        showSnow();
+                    }
+                    eventTriggered = true;
+                }
+            }
+            checkCount++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 5000);
+}
+
 // Проверка погоды (редкие события)
 function checkWeather() {
     const chance = Math.random();
-    if (chance < 0.40) { // 40% шанс на событие (увеличен шанс)
+    if (chance < 0.40) { // 40% шанс на событие
         const eventType = Math.random() < 0.5 ? 'lightning' : 'frozen';
         const fertileCells = gameState.flat().filter(cell => cell.fertile && (cell.content === 'sapling' || cell.content === 'small-tree'));
         if (fertileCells.length > 0) {
@@ -420,6 +459,31 @@ function stopWeather() {
     rainSound.currentTime = 0;
     blizzardSound.pause();
     blizzardSound.currentTime = 0;
+}
+
+// Полный экран
+function toggleFullScreen() {
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullScreenElement && !document.msFullScreenElement) {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
 }
 
 // Старт игры
