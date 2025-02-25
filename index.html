@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Лесовосстановление</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .game-container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 60px);
+            gap: 2px;
+            margin: 20px auto;
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            border: 1px solid #ccc;
+            font-size: 30px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #d2b48c; /* Песок для неплодородной */
+        }
+        .fertile {
+            background-color: #8b4513; /* Коричневый для плодородной */
+        }
+        #info, #controls {
+            margin: 10px 0;
+        }
+        progress {
+            width: 200px;
+            height: 20px;
+            margin: 10px auto;
+        }
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+        button {
+            padding: 5px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Лесовосстановление</h1>
+        <div id="info">Уровень: 1 | Саженцев: 5 | Монеты: 0 | Очки: 0</div>
+        <progress id="levelProgress" value="0" max="4"></progress> <!-- Шкала прогресса, начальное значение для уровня 1 (нужно 4 дерева) -->
+        <div id="controls">
+            <button onclick="buySeedlings()">Докупить саженцы (2 монеты за 1 саженец)</button>
+        </div>
+        <div class="grid" id="gameGrid"></div>
+    </div>
+    <div id="toast"></div> <!-- Тост для уведомлений -->
+
+    <script>
+        const grid = document.getElementById('gameGrid');
+        const info = document.getElementById('info');
+        const levelProgress = document.getElementById('levelProgress');
+        const toast = document.getElementById('toast');
+        let level = 1;
+        let seedlings = 5; // Начальное количество саженцев
+        let coins = 0; // Монеты
+        let score = 0;
+        const gridSize = 6;
+        let gameState = [];
+
+        // Инициализация уровня
+        function startLevel() {
+            grid.innerHTML = '';
+            gameState = [];
+            const fertileCount = Math.min(3 + level, gridSize * gridSize - 1); // Ограничим плодородные клетки
+            const fertileSpots = generateFertileSpots(fertileCount);
+
+            for (let i = 0; i < gridSize; i++) {
+                gameState[i] = [];
+                for (let j = 0; j < gridSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.textContent = '🌾'; // Трава
+                    if (fertileSpots.some(([x, y]) => x === i && y === j)) {
+                        cell.classList.add('fertile');
+                        cell.dataset.fertile = 'true';
+                    }
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.addEventListener('click', handleClick); // Привязываем события
+                    grid.appendChild(cell);
+                    gameState[i][j] = { fertile: !!cell.dataset.fertile, content: 'grass' };
+                }
+            }
+            seedlings = Math.max(3, 5 - level); // Уменьшаем саженцы с ростом уровня, минимум 3
+            coins = Math.max(0, coins - (5 - seedlings) * 2); // Автоматически тратим монеты на докупку, если их мало
+            updateProgress(); // Обновляем прогресс
+            updateInfo();
+        }
+
+        // Генерация плодородных клеток
+        function generateFertileSpots(count) {
+            const spots = [];
+            while (spots.length < count) {
+                const x = Math.floor(Math.random() * gridSize);
+                const y = Math.floor(Math.random() * gridSize);
+                if (!spots.some(([sx, sy]) => sx === x && sy === y)) {
+                    spots.push([x, y]);
+                }
+            }
+            return spots;
+        }
+
+        // Обработка клика
+        function handleClick(event) {
+            const row = parseInt(event.target.dataset.row);
+            const col = parseInt(event.target.dataset.col);
+            const cell = event.target;
+
+            if (seedlings > 0 && gameState[row][col].fertile && gameState[row][col].content === 'grass') {
+                cell.textContent = '🌱'; // Саженец
+                gameState[row][col].content = 'seedling';
+                seedlings--;
+                setTimeout(() => {
+                    cell.textContent = '🌲'; // Дерево через 2 секунды
+                    gameState[row][col].content = 'tree';
+                    score += 5;
+                    coins += 5; // Даём 5 монет за дерево
+                    checkLevelEnd(); // Проверяем прогресс после роста
+                    updateProgress(); // Обновляем прогресс
+                    updateInfo();
+                }, 2000);
+            }
+        }
+
+        // Проверка конца уровня
+        function checkLevelEnd() {
+            const treesLeft = gameState.flat().filter(cell => cell.content === 'tree').length;
+            if (treesLeft >= 3 + level) {
+                level++;
+                seedlings = Math.max(3, 5 - level); // Уменьшаем саженцы, минимум 3
+                coins = Math.max(0, coins - (5 - seedlings) * 2); // Автоматически тратим монеты на докупку
+                score += 10; // Бонус за уровень
+                alert(`Уровень ${level - 1} пройден! Переходим на уровень ${level}`);
+                startLevel();
+            }
+        }
+
+        // Докупка саженцев за монеты
+        function buySeedlings() {
+            if (coins >= 2) {
+                coins -= 2;
+                seedlings += 1;
+                showToast('Саженец куплен за 2 монеты!');
+                updateInfo();
+            } else {
+                showToast('Недостаточно монет! Нужно 2 монеты за саженец.');
+            }
+        }
+
+        // Показ тоста
+        function showToast(message) {
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000); // Тост исчезает через 3 секунды
+        }
+
+        // Обновление прогресса уровня
+        function updateProgress() {
+            const treesNeeded = 3 + level;
+            const treesLeft = gameState.flat().filter(cell => cell.content === 'tree').length;
+            levelProgress.value = treesLeft;
+            levelProgress.max = treesNeeded;
+        }
+
+        // Обновление информации
+        function updateInfo() {
+            info.textContent = `Уровень: ${level} | Саженцев: ${seedlings} | Монеты: ${coins} | Очки: ${score}`;
+        }
+
+        // Старт игры
+        startLevel();
+    </script>
+</body>
+</html>
