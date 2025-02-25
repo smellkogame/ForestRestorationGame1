@@ -1,0 +1,296 @@
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+.game-container {
+    text-align: center;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+}
+
+h1 {
+    margin: 0 0 15px 0;
+    font-size: 1.5em;
+    color: #2e7d32;
+}
+
+#current-level {
+    margin: 10px 0;
+    font-size: 1.2em;
+    color: #2196F3;
+}
+
+.grid {
+    display: grid;
+    gap: 2px;
+    margin: 20px auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.cell {
+    border: 1px solid #ccc;
+    font-size: 2em;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+.cell:hover {
+    transform: scale(1.05);
+}
+
+.cell.tree, .cell.small-tree, .cell.sapling {
+    animation: sway 3s infinite ease-in-out;
+}
+
+.fertile {
+    background-color: #8b4513; /* Пустая плодородная земля */
+}
+
+.unfertile {
+    background-color: #a67b5b; /* Неплодородная земля */
+}
+
+#info {
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.counter-block {
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1em;
+    min-width: 120px;
+}
+
+.seedlings-block {
+    background-color: #4CAF50; /* Зелёный для саженцев */
+    color: white;
+}
+
+.coins-block {
+    background-color: #FFD700; /* Золотой для монет */
+    color: black;
+}
+
+.score-block {
+    background-color: #2196F3; /* Синий для очков */
+    color: white;
+}
+
+#controls {
+    margin: 10px 0;
+}
+
+progress {
+    width: 80%;
+    height: 20px;
+    margin: 10px auto;
+}
+
+button {
+    padding: 8px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+    transform: scale(1.05);
+}
+
+#toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: none;
+    z-index: 1000;
+    font-size: 1em;
+}
+
+.loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    z-index: 1001;
+}
+
+.loading.hidden {
+    display: none;
+}
+
+.celebration {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    font-size: 2em;
+}
+
+.celebration.hidden {
+    display: none;
+}
+
+.celebration span {
+    position: absolute;
+    font-size: 1.5em;
+    animation: fireworks 2s ease-out forwards;
+}
+
+@keyframes fireworks {
+    0% { opacity: 0; transform: translateY(0) scale(0); }
+    50% { opacity: 1; transform: translateY(-100px) scale(1); }
+    100% { opacity: 0; transform: translateY(-200px) scale(0); }
+}
+
+@keyframes sway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+/* Медиа-запросы для адаптации */
+@media screen and (min-width: 768px) { /* Планшеты и ПК */
+    .game-container {
+        max-width: 800px;
+        padding: 30px;
+    }
+    h1 {
+        font-size: 2em;
+    }
+    #current-level {
+        font-size: 1.5em;
+    }
+    .grid {
+        grid-template-columns: repeat(6, 100px);
+    }
+    .cell {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5em;
+    }
+    #info {
+        gap: 30px;
+    }
+    .counter-block {
+        font-size: 1.2em;
+        min-width: 150px;
+    }
+    #controls {
+        font-size: 1.2em;
+    }
+    button {
+        font-size: 1.1em;
+        padding: 10px 25px;
+    }
+    .cell.tree, .cell.small-tree, .cell.sapling {
+        animation: sway 4s infinite ease-in-out;
+    }
+}
+
+@media screen and (max-width: 767px) { /* Мобильные устройства */
+    .game-container {
+        width: 100%;
+        padding: 10px;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .grid {
+        grid-template-columns: repeat(6, 60px);
+    }
+    .cell {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5em;
+    }
+    #info {
+        gap: 10px;
+    }
+    .counter-block {
+        font-size: 0.9em;
+        min-width: 100px;
+    }
+    progress {
+        width: 90%;
+    }
+    .cell.tree, .cell.small-tree, .cell.sapling {
+        animation: sway 2s infinite ease-in-out;
+    }
+}
+
+@media screen and (min-width: 1920px) { /* Специально для 1920x1080 */
+    .game-container {
+        max-width: 1000px;
+        padding: 40px;
+    }
+    .grid {
+        grid-template-columns: repeat(6, 120px);
+    }
+    .cell {
+        width: 120px;
+        height: 120px;
+        font-size: 3em;
+    }
+    #info {
+        gap: 40px;
+    }
+    .counter-block {
+        font-size: 1.5em;
+        min-width: 180px;
+        padding: 15px 20px;
+    }
+    #controls {
+        font-size: 1.5em;
+    }
+    button {
+        font-size: 1.3em;
+        padding: 12px 30px;
+    }
+    progress {
+        width: 70%;
+        height: 25px;
+    }
+    .cell.tree, .cell.small-tree, .cell.sapling {
+        animation: sway 4s infinite ease-in-out;
+    }
+}
