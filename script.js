@@ -10,7 +10,6 @@ const celebration = document.getElementById('celebration');
 const rainContainer = document.querySelector('.rain');
 const snowContainer = document.querySelector('.snow');
 const newsText = document.getElementById('news-text');
-const fullscreenBtn = document.getElementById('fullscreen-btn');
 
 let level = 1;
 let seedlings = 5; // Начальное количество саженцев
@@ -134,12 +133,28 @@ function loadProgress() {
     }
     startLevel();
     updateNews();
+    enterFullScreen();
 }
 
 // Сохранение прогресса
 function saveProgress() {
     const data = { level, seedlings, coins, score, comboMultiplier };
     localStorage.setItem('forestGameProgress', JSON.stringify(data));
+}
+
+// Автоматический полный экран
+function enterFullScreen() {
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullScreenElement && !document.msFullScreenElement) {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+        }
+    }
 }
 
 // Инициализация уровня
@@ -289,16 +304,15 @@ function levelUp() {
 // Празднование прохождения уровня
 function celebrateLevelUp() {
     celebration.classList.remove('hidden');
-    celebration.innerHTML = '<span>Уровень пройден! 🎉</span>';
-    // Фейерверк из эмодзи
-    for (let i = 0; i < 30; i++) { // Увеличенное количество частиц для эффектного фейерверка
-        const emoji = ['🎉', '🎊', '🪄'][Math.floor(Math.random() * 3)];
-        const particle = document.createElement('span');
-        particle.textContent = emoji;
-        particle.style.left = `${Math.random() * 100}vw`;
-        particle.style.top = `${Math.random() * 100}vh`;
-        particle.style.animationDelay = `${Math.random() * 1}s`;
-        celebration.appendChild(particle);
+    celebration.innerHTML = '<span>Уровень пройден ⭐⭐</span>';
+    // Фейерверк из маленьких звёздочек
+    for (let i = 0; i < 10; i++) { // Меньше частиц для минимализма
+        const star = document.createElement('span');
+        star.textContent = '⭐';
+        star.style.left = `${Math.random() * 100}vw`;
+        star.style.top = `${Math.random() * 100}vh`;
+        star.style.animationDelay = `${Math.random() * 1}s`;
+        celebration.appendChild(star);
     }
     // Одна мягкая вибрация
     if ('vibrate' in navigator) {
@@ -459,31 +473,6 @@ function stopWeather() {
     rainSound.currentTime = 0;
     blizzardSound.pause();
     blizzardSound.currentTime = 0;
-}
-
-// Полный экран
-function toggleFullScreen() {
-    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullScreenElement && !document.msFullScreenElement) {
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen();
-        } else if (document.documentElement.mozRequestFullScreen) {
-            document.documentElement.mozRequestFullScreen();
-        } else if (document.documentElement.webkitRequestFullscreen) {
-            document.documentElement.webkitRequestFullscreen();
-        } else if (document.documentElement.msRequestFullscreen) {
-            document.documentElement.msRequestFullscreen();
-        }
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
-    }
 }
 
 // Старт игры
