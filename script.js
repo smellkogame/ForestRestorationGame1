@@ -7,6 +7,12 @@ const levelProgress = document.getElementById('levelProgress');
 const toast = document.getElementById('toast');
 const loading = document.getElementById('loading');
 const celebration = document.getElementById('celebration');
+const rainContainer = document.createElement('div');
+const snowContainer = document.createElement('div');
+rainContainer.className = 'rain';
+snowContainer.className = 'snow';
+document.body.appendChild(rainContainer);
+document.body.appendChild(snowContainer);
 
 let level = 1;
 let seedlings = 5; // Начальное количество саженцев
@@ -14,12 +20,19 @@ let coins = 0; // Монеты
 let score = 0;
 const gridSize = 6;
 let gameState = [];
+let weatherTimeout = null;
 
 // Звуковые эффекты
 const plantSound = new Audio('assets/audio/plant.mp3');
 const growSound = new Audio('assets/audio/grow.mp3');
 const levelUpSound = new Audio('assets/audio/levelup.mp3');
 const buySound = new Audio('assets/audio/buy.mp3');
+const thunderSound = new Audio('assets/audio/thunder.mp3');
+const rainSound = new Audio('assets/audio/rain.mp3');
+const blizzardSound = new Audio('assets/audio/blizzard.mp3');
+
+// Уменьшение громкости звука покупки
+buySound.volume = 0.5; // Уменьшаем громкость в два раза
 
 // Загрузка сохранённого прогресса
 function loadProgress() {
@@ -71,6 +84,7 @@ function startLevel() {
     updateProgress();
     updateInfo();
     saveProgress();
+    startWeatherEvents();
 }
 
 // Генерация плодородных клеток
@@ -114,6 +128,16 @@ function handleClick(event) {
                 updateInfo();
             }, 2000); // Ещё 2 секунды до больших деревьев
         }, 2000); // 2 секунды до маленьких деревьев
+    } else if (gameState[row][col].content === 'lightning') {
+        cell.textContent = ''; // Убираем молнию
+        cell.classList.remove('lightning');
+        gameState[row][col].content = 'fertile';
+        stopWeather();
+    } else if (gameState[row][col].content === 'frozen') {
+        cell.textContent = ''; // Убираем снежинку
+        cell.classList.remove('frozen');
+        gameState[row][col].content = 'fertile';
+        stopWeather();
     }
 }
 
@@ -145,7 +169,7 @@ function celebrateLevelUp() {
     celebration.classList.remove('hidden');
     celebration.innerHTML = '<span>Уровень пройден! ⭐</span>';
     // Фейерверк из звёздочек
-    for (let i = 0; i < 20; i++) { // Увеличил количество частиц для эффектного фейерверка
+    for (let i = 0; i < 20; i++) {
         const star = document.createElement('span');
         star.textContent = '⭐';
         star.style.left = `${Math.random() * 100}vw`;
@@ -153,7 +177,7 @@ function celebrateLevelUp() {
         star.style.animationDelay = `${Math.random() * 1}s`;
         celebration.appendChild(star);
     }
-    // Мягкая вибрация на протяжении анимации (200 мс каждые 500 мс)
+    // Мягкая вибрация на протяжении анимации
     if ('vibrate' in navigator) {
         vibrateDuringFireworks();
     }
@@ -172,7 +196,7 @@ function vibrateDuringFireworks() {
         }
     }, 500); // Повтор каждые 500 мс
     setTimeout(() => {
-        clearInterval(vibrationInterval); // Останавливаем вибрацию после 3 секунд
+        clearInterval(vibrationInterval);
         if ('vibrate' in navigator) {
             navigator.vibrate(0); // Останавливаем вибрацию
         }
@@ -215,6 +239,81 @@ function updateInfo() {
     infoCoins.textContent = coins;
     infoScore.textContent = score;
     document.getElementById('current-level').textContent = `Уровень: ${level}`;
+}
+
+// Старт погодных событий
+function startWeatherEvents() {
+    if (weatherTimeout) clearTimeout(weatherTimeout);
+    weatherTimeout = setTimeout(checkWeather, 5000); // Проверяем погоду каждые 5 секунд
+}
+
+// Проверка погоды (редкие события)
+function checkWeather() {
+    const chance = Math.random();
+    if (chance < 0.10) { // 1% шанс на событие
+        const eventType = Math.random() < 0.5 ? 'lightning' : 'frozen';
+        const fertileCells = gameState.flat().filter(cell => cell.fertile && (cell.content === 'sapling' || cell.content === 'small-tree'));
+        if (fertileCells.length > 0) {
+            const randomCell = fertileCells[Math.floor(Math.random() * fertileCells.length)];
+            const [row, col] = [randomCell.row, randomCell.col];
+            const cell = grid.children[row * gridSize + col];
+            if (eventType === 'lightning') {
+                cell.textContent = '⚡';
+                cell.classList.add('lightning');
+                gameState[row][col].content = 'lightning';
+                showRain();
+            } else {
+                cell.textContent = '❄';
+                cell.classList.add('frozen');
+                gameState[row][col].content = 'frozen';
+                showSnow();
+            }
+        }
+    }
+    weatherTimeout = setTimeout(checkWeather, 5000); // Повторяем проверку
+}
+
+// Имитация дождя
+function showRain() {
+    rainContainer.innerHTML = '';
+    thunderSound.play();
+    rainSound.play();
+    for (let i = 0; i < 50; i++) {
+        const drop = document.createElement('span');
+        drop.className = 'drop';
+        drop.textContent = '💧';
+        drop.style.left = `${Math.random() * 100}vw`;
+        drop.style.animationDelay = `${Math.random() * 2}s`;
+        rainContainer.appendChild(drop);
+    }
+    setTimeout(stopWeather, 5000); // Дождь длится 5 секунд
+}
+
+// Имитация снега
+function showSnow() {
+    snowContainer.innerHTML = '';
+    blizzardSound.play();
+    for (let i = 0; i < 50; i++) {
+        const flake = document.createElement('span');
+        flake.className = 'flake';
+        flake.textContent = '❄';
+        flake.style.left = `${Math.random() * 100}vw`;
+        flake.style.animationDelay = `${Math.random() * 2}s`;
+        snowContainer.appendChild(flake);
+    }
+    setTimeout(stopWeather, 5000); // Снег длится 5 секунд
+}
+
+// Остановка погодных эффектов
+function stopWeather() {
+    rainContainer.innerHTML = '';
+    snowContainer.innerHTML = '';
+    thunderSound.pause();
+    thunderSound.currentTime = 0;
+    rainSound.pause();
+    rainSound.currentTime = 0;
+    blizzardSound.pause();
+    blizzardSound.currentTime = 0;
 }
 
 // Старт игры
