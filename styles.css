@@ -9,6 +9,20 @@ body {
     position: relative; /* Для анимаций дождя и снега */
 }
 
+.news-container {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f8f8f8;
+    padding: 5px 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1002;
+    font-size: 0.9em;
+    color: #333;
+}
+
 .game-container {
     text-align: center;
     background-color: white;
@@ -184,7 +198,7 @@ button:hover {
 
 .celebration span {
     position: absolute;
-    font-size: 2em; /* Увеличенные звёздочки */
+    font-size: 2em; /* Увеличенные эмодзи */
     animation: fireworks 2s ease-out forwards;
 }
 
@@ -264,8 +278,14 @@ button:hover {
     .cell.tree, .cell.small-tree, .cell.sapling {
         animation: sway 4s infinite ease-in-out;
     }
+    .news-container {
+        font-size: 1.1em;
+    }
     .rain.drop, .snow.flake {
         font-size: 2em;
+    }
+    .celebration span {
+        font-size: 2.5em;
     }
 }
 
@@ -297,8 +317,16 @@ button:hover {
     .cell.tree, .cell.small-tree, .cell.sapling {
         animation: sway 2s infinite ease-in-out;
     }
+    .news-container {
+        font-size: 0.8em;
+        top: 5px;
+        padding: 3px 10px;
+    }
     .rain.drop, .snow.flake {
         font-size: 1.2em;
+    }
+    .celebration span {
+        font-size: 1.8em;
     }
 }
 
@@ -337,7 +365,15 @@ button:hover {
     .cell.tree, .cell.small-tree, .cell.sapling {
         animation: sway 4s infinite ease-in-out;
     }
+    .news-container {
+        font-size: 1.2em;
+        top: 15px;
+        padding: 7px 20px;
+    }
     .rain.drop, .snow.flake {
         font-size: 2.5em;
+    }
+    .celebration span {
+        font-size: 3em;
     }
 }
