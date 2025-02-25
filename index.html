@@ -7,9 +7,6 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="news-container">
-        <div id="news">Новости лесничества: <span id="news-text"></span></div>
-    </div>
     <div class="game-container">
         <h1>Лесовосстановление</h1>
         <div id="current-level">Уровень: 1</div>
@@ -21,6 +18,9 @@
         <progress id="levelProgress" value="0" max="4"></progress>
         <div id="controls">
             <button onclick="buySeedlings()">Докупить саженцы (2 💰 за 1 саженец)</button>
+        </div>
+        <div class="news-container">
+            <strong>Новости</strong>: <em><span id="news-text"></span></em>
         </div>
         <div class="grid" id="gameGrid"></div>
         <div id="loading" class="loading hidden">Загрузка...</div>
