@@ -16,7 +16,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     width: 90%;
-    max-width: 600px;
+    max-width: 500px; /* Уменьшил максимальную ширину контейнера */
     position: relative;
     margin: 15px; /* Отступы по краям для всех устройств */
 }
@@ -46,14 +46,14 @@ h2 {
 .grid {
     display: grid;
     gap: 2px;
-    margin: 20px auto;
+    margin: 15px auto; /* Уменьшил отступы вокруг грида */
     justify-content: center;
     align-items: center;
 }
 
 .cell {
     border: 1px solid #d7ccc8; /* Более мягкий коричневый цвет границы */
-    font-size: 2em;
+    font-size: 1.5em; /* Уменьшил размер текста в клетках */
     text-align: center;
     cursor: pointer;
     display: flex;
@@ -71,11 +71,11 @@ h2 {
 }
 
 .cell.lightning {
-    animation: blink 0.5s infinite; /* Мигающий эффект для молнии */
+    animation: blink 0.5s infinite; /* Мигающий эффект для молнии (оставлен для варианта с 100% шансом) */
 }
 
 .cell.frozen {
-    background-color: #f0f0f0; /* Белый фон для заморозки */
+    background-color: #f0f0f0; /* Белый фон для заморозки (оставлен для варианта с 100% шансом) */
 }
 
 .fertile {
@@ -208,24 +208,6 @@ button:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-.fullscreen-prompt {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px 40px;
-    border-radius: 12px;
-    z-index: 1002;
-    text-align: center;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-.fullscreen-prompt.hidden {
-    display: none;
-}
-
 .loading {
     position: fixed;
     top: 50%;
@@ -283,12 +265,7 @@ button:hover {
     height: 100%;
     pointer-events: none;
     z-index: 1000;
-}
-
-.rain.drop, .snow.flake {
-    position: absolute;
-    font-size: 1.5em;
-    animation: fall 2s linear infinite;
+    display: none; /* Убраны погодные эффекты по умолчанию */
 }
 
 @keyframes fall {
@@ -317,8 +294,8 @@ button:hover {
 /* Медиа-запросы для адаптации */
 @media screen and (min-width: 768px) { /* Планшеты и ПК */
     .game-container, .menu-container, .settings-container {
-        max-width: 800px;
-        padding: 30px;
+        max-width: 500px; /* Уменьшил максимальную ширину */
+        padding: 25px;
         margin: 20px; /* Большие отступы для ПК */
     }
     h1 {
@@ -331,46 +308,42 @@ button:hover {
         font-size: 1.5em;
     }
     .grid {
-        grid-template-columns: repeat(6, 100px);
+        grid-template-columns: repeat(5, 80px); /* Уменьшил размер грида до 5x5 клеток */
     }
     .cell {
-        width: 100px;
-        height: 100px;
-        font-size: 2.5em;
+        width: 80px;
+        height: 80px;
+        font-size: 2em;
     }
     #info {
-        gap: 20px;
+        gap: 15px;
     }
     .counter-block {
-        font-size: 1.2em;
-        min-width: 150px;
+        font-size: 1.1em;
+        min-width: 130px;
     }
     #controls {
-        gap: 20px;
+        gap: 15px;
+    }
+    .menu-buttons {
+        gap: 15px;
     }
     .menu-buttons button {
         font-size: 1.2em;
         padding: 15px 30px;
     }
     .news-container {
-        font-size: 1.1em;
-        padding: 10px 20px;
+        font-size: 1em;
+        padding: 8px 15px;
     }
     button {
-        font-size: 1.1em;
-        padding: 12px 25px;
-    }
-    .cell.tree, .cell.small-tree, .cell.sapling {
-        animation: sway 4s infinite ease-in-out;
+        font-size: 1em;
+        padding: 10px 20px;
     }
     .rain.drop, .snow.flake {
-        font-size: 2em;
+        font-size: 1.8em;
     }
     .celebration span {
-        font-size: 1.2em;
-    }
-    .fullscreen-prompt {
-        padding: 25px 50px;
         font-size: 1.1em;
     }
 }
@@ -390,12 +363,12 @@ button:hover {
         font-size: 1.3em;
     }
     .grid {
-        grid-template-columns: repeat(6, 60px);
+        grid-template-columns: repeat(5, 50px); /* Уменьшил размер грида до 5x5 клеток */
     }
     .cell {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5em;
+        width: 50px;
+        height: 50px;
+        font-size: 1.2em;
     }
     #info {
         gap: 10px;
@@ -405,7 +378,7 @@ button:hover {
         min-width: 100px;
     }
     progress {
-        width: 90%;
+        width: 85%;
     }
     #controls {
         gap: 10px;
@@ -415,31 +388,24 @@ button:hover {
     }
     .menu-buttons button {
         font-size: 1em;
-        padding: 10px 20px;
+        padding: 8px 15px;
     }
     .news-container {
         font-size: 0.8em;
         padding: 5px 10px;
         margin: 5px 0;
     }
-    .cell.tree, .cell.small-tree, .cell.sapling {
-        animation: sway 2s infinite ease-in-out;
-    }
     .rain.drop, .snow.flake {
         font-size: 1.2em;
     }
     .celebration span {
-        font-size: 1em;
-    }
-    .fullscreen-prompt {
-        padding: 15px 25px;
         font-size: 0.9em;
     }
 }
 
 @media screen and (min-width: 1920px) { /* Специально для 1920x1080 */
     .game-container, .menu-container, .settings-container {
-        max-width: 1000px;
+        max-width: 600px; /* Уменьшил максимальную ширину */
         padding: 40px;
         margin: 30px; /* Большие отступы для большого экрана */
     }
@@ -450,23 +416,23 @@ button:hover {
         font-size: 2.5em;
     }
     .grid {
-        grid-template-columns: repeat(6, 120px);
+        grid-template-columns: repeat(5, 100px); /* Уменьшил размер грида до 5x5 клеток */
     }
     .cell {
-        width: 120px;
-        height: 120px;
-        font-size: 3em;
+        width: 100px;
+        height: 100px;
+        font-size: 2.5em;
     }
     #info {
-        gap: 30px;
+        gap: 20px;
     }
     .counter-block {
-        font-size: 1.5em;
-        min-width: 180px;
-        padding: 15px 20px;
+        font-size: 1.3em;
+        min-width: 150px;
+        padding: 12px 18px;
     }
     #controls {
-        gap: 25px;
+        gap: 20px;
     }
     .menu-buttons {
         gap: 20px;
@@ -476,29 +442,22 @@ button:hover {
         padding: 18px 35px;
     }
     .news-container {
-        font-size: 1.2em;
-        padding: 12px 25px;
+        font-size: 1.1em;
+        padding: 10px 20px;
     }
     button {
-        font-size: 1.3em;
-        padding: 15px 30px;
+        font-size: 1.1em;
+        padding: 12px 25px;
     }
     progress {
         width: 70%;
-        height: 25px;
-    }
-    .cell.tree, .cell.small-tree, .cell.sapling {
-        animation: sway 4s infinite ease-in-out;
+        height: 22px;
     }
     .rain.drop, .snow.flake {
-        font-size: 2.5em;
+        font-size: 2.2em;
     }
     .celebration span {
-        font-size: 1.5em;
-    }
-    .fullscreen-prompt {
-        padding: 30px 60px;
-        font-size: 1.2em;
+        font-size: 1.3em;
     }
 }
 
@@ -528,8 +487,9 @@ button:hover {
 :-moz-full-screen .cell,
 :-ms-fullscreen .cell,
 :fullscreen .cell {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5em; /* Уменьшил размер текста в полноэкранном режиме */
 }
 
 :-webkit-full-screen #info,

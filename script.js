@@ -20,19 +20,17 @@ let coins = 0; // Монеты
 let score = 0;
 let comboMultiplier = 1; // Множитель комбо
 let lastPlantTime = 0; // Время последней посадки для комбо
-const gridSize = 6;
+const gridSize = 5; // Уменьшил размер грида до 5x5
 let gameState = [];
 let weatherTimeout = null;
 let comboTimeout = null;
+let newsTimeout = null; // Таймер для новостей
 
 // Звуковые эффекты (предварительная загрузка для устранения задержек)
 const plantSound = new Audio('assets/audio/plant.mp3');
 const growSound = new Audio('assets/audio/grow.mp3');
 const levelUpSound = new Audio('assets/audio/levelup.mp3');
 const buySound = new Audio('assets/audio/buy.mp3');
-const thunderSound = new Audio('assets/audio/thunder.mp3');
-const rainSound = new Audio('assets/audio/rain.mp3');
-const blizzardSound = new Audio('assets/audio/blizzard.mp3');
 
 // Уменьшение громкости звука покупки
 buySound.volume = 0.5; // Уменьшаем громкость в два раза
@@ -40,9 +38,6 @@ buySound.preload = 'auto'; // Предварительная загрузка
 plantSound.preload = 'auto';
 growSound.preload = 'auto';
 levelUpSound.preload = 'auto';
-thunderSound.preload = 'auto';
-rainSound.preload = 'auto';
-blizzardSound.preload = 'auto';
 
 // Новости лесничества
 const news = [
@@ -116,11 +111,23 @@ const news = [
     "В Аргентине началась кампания по восстановлению пампасских лесов после засухи."
 ];
 
-// Обновление новостей каждые 30 секунд
+// Обновление новостей каждые 10 секунд
 function updateNews() {
+    if (newsTimeout) {
+        clearTimeout(newsTimeout); // Сбрасываем предыдущий таймер, чтобы избежать наложения
+    }
     const randomNews = news[Math.floor(Math.random() * news.length)];
     newsText.textContent = randomNews;
-    setTimeout(updateNews, 30000);
+    newsTimeout = setTimeout(updateNews, 10000); // Обновляем каждые 10 секунд
+    console.log('News updated:', randomNews);
+}
+
+// Остановка обновления новостей
+function stopNewsUpdates() {
+    if (newsTimeout) {
+        clearTimeout(newsTimeout);
+        newsTimeout = null;
+    }
 }
 
 // Загрузка сохранённого прогресса
@@ -135,6 +142,7 @@ function loadProgress() {
         comboMultiplier = data.comboMultiplier || 1;
     }
     showMenu();
+    updateNews(); // Инициализируем новости при загрузке
 }
 
 // Показать меню
@@ -142,23 +150,21 @@ function showMenu() {
     menuContainer.classList.remove('hidden');
     gameContainer.classList.add('hidden');
     settingsContainer.classList.add('hidden');
+    updateNews(); // Обновляем новости в меню
+    console.log('Menu shown');
 }
 
 // Начать игру
 function startGame() {
+    console.log('Start game clicked');
     loadProgress(); // Загружаем прогресс
     enterFullScreen(); // Пытаемся войти в полноэкранный режим
     gameContainer.classList.remove('hidden');
     menuContainer.classList.add('hidden');
     settingsContainer.classList.add('hidden');
-    const fullscreenPromise = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-    if (fullscreenPromise) {
-        startLevel(); // Начинаем игру, если уже в полноэкранном режиме
-    } else {
-        // Если полноэкранный режим заблокирован, начинаем игру в обычном режиме с уведомлением
-        startLevel();
-        showToast('Полноэкранный режим заблокирован. Включите вручную (F11 или меню браузера).');
-    }
+    startLevel(); // Начинаем игру сразу, независимо от полноэкранного режима
+    updateNews(); // Обновляем новости при старте игры
+    showToast('Игра началась. Для полноэкранного режима используйте F11 или меню браузера, если требуется.');
 }
 
 // Показать настройки
@@ -166,21 +172,27 @@ function showSettings() {
     menuContainer.classList.add('hidden');
     gameContainer.classList.add('hidden');
     settingsContainer.classList.remove('hidden');
+    stopNewsUpdates(); // Останавливаем обновление новостей в настройках
+    console.log('Settings shown');
 }
 
 // Скрыть настройки
 function hideSettings() {
     settingsContainer.classList.add('hidden');
     showMenu();
+    console.log('Back to menu');
 }
 
 // Выход из игры
 function exitGame() {
     window.close(); // Простая имитация выхода (зависит от браузера/устройства)
+    console.log('Exit clicked');
+    stopNewsUpdates(); // Останавливаем обновление новостей при выходе
 }
 
 // Полный экран
 function enterFullScreen() {
+    console.log('Attempting fullscreen');
     if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullScreenElement && !document.msFullScreenElement) {
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen();
@@ -190,7 +202,11 @@ function enterFullScreen() {
             document.documentElement.webkitRequestFullscreen();
         } else if (document.documentElement.msRequestFullscreen) {
             document.documentElement.msRequestFullscreen();
+        } else {
+            console.log('Fullscreen API not supported');
         }
+    } else {
+        console.log('Already in fullscreen');
     }
 }
 
@@ -198,10 +214,12 @@ function enterFullScreen() {
 function saveProgress() {
     const data = { level, seedlings, coins, score, comboMultiplier };
     localStorage.setItem('forestGameProgress', JSON.stringify(data));
+    console.log('Progress saved');
 }
 
 // Инициализация уровня
 function startLevel() {
+    console.log('Starting level');
     grid.innerHTML = '';
     gameState = [];
     const fertileCount = Math.min(3 + level, gridSize * gridSize - 1);
@@ -231,8 +249,8 @@ function startLevel() {
     updateProgress();
     updateInfo();
     saveProgress();
-    startWeatherEvents();
-    ensureWeatherEvent(); // Гарантируем хотя бы одно погодное событие за уровень
+    // Убраны погодные события
+    console.log('Weather events disabled');
 }
 
 // Генерация плодородных клеток
@@ -258,7 +276,8 @@ function handleClick(event) {
     if (seedlings > 0 && gameState[row][col].fertile && gameState[row][col].content === 'fertile') {
         cell.textContent = '🌱'; // Ростки
         gameState[row][col].content = 'sapling';
-        seedlings--;
+        seedlings--; // Уменьшаем количество саженцев сразу при посадке
+        updateInfo(); // Обновляем интерфейс сразу после посадки
         plantSound.play();
         checkCombo(now);
         setTimeout(() => {
@@ -279,16 +298,6 @@ function handleClick(event) {
                 resetCombo();
             }, 20000); // 20 секунд до больших деревьев
         }, 20000); // 20 секунд до маленьких деревьев
-    } else if (gameState[row][col].content === 'lightning') {
-        cell.textContent = ''; // Убираем молнию
-        cell.classList.remove('lightning');
-        gameState[row][col].content = 'fertile';
-        stopWeather();
-    } else if (gameState[row][col].content === 'frozen') {
-        cell.textContent = ''; // Убираем снежинку
-        cell.classList.remove('frozen');
-        gameState[row][col].content = 'fertile';
-        stopWeather();
     }
 }
 
@@ -406,116 +415,10 @@ function updateInfo() {
     document.getElementById('current-level').textContent = `Уровень: ${level}`;
 }
 
-// Старт погодных событий
+// Старт погодных событий (убраны погодные события)
 function startWeatherEvents() {
-    if (weatherTimeout) clearTimeout(weatherTimeout);
-    weatherTimeout = setTimeout(checkWeather, 5000); // Проверяем погоду каждые 5 секунд
-}
-
-// Гарантируем хотя бы одно погодное событие за уровень
-function ensureWeatherEvent() {
-    const totalChecks = Math.ceil((60 * 1000) / 5000); // Количество проверок за минуту (примерное время уровня)
-    let eventTriggered = false;
-    let checkCount = 0;
-
-    const interval = setInterval(() => {
-        if (!eventTriggered && checkCount < totalChecks) {
-            const chance = Math.random();
-            if (chance < 0.40) { // 40% шанс
-                const eventType = Math.random() < 0.5 ? 'lightning' : 'frozen';
-                const fertileCells = gameState.flat().filter(cell => cell.fertile && (cell.content === 'sapling' || cell.content === 'small-tree'));
-                if (fertileCells.length > 0) {
-                    const randomCell = fertileCells[Math.floor(Math.random() * fertileCells.length)];
-                    const [row, col] = [randomCell.row, randomCell.col];
-                    const cell = grid.children[row * gridSize + col];
-                    if (eventType === 'lightning') {
-                        cell.textContent = '⚡';
-                        cell.classList.add('lightning');
-                        gameState[row][col].content = 'lightning';
-                        showRain();
-                    } else {
-                        cell.textContent = '❄';
-                        cell.classList.add('frozen');
-                        gameState[row][col].content = 'frozen';
-                        showSnow();
-                    }
-                    eventTriggered = true;
-                }
-            }
-            checkCount++;
-        } else {
-            clearInterval(interval);
-        }
-    }, 5000);
-}
-
-// Проверка погоды (редкие события)
-function checkWeather() {
-    const chance = Math.random();
-    if (chance < 0.40) { // 40% шанс на событие
-        const eventType = Math.random() < 0.5 ? 'lightning' : 'frozen';
-        const fertileCells = gameState.flat().filter(cell => cell.fertile && (cell.content === 'sapling' || cell.content === 'small-tree'));
-        if (fertileCells.length > 0) {
-            const randomCell = fertileCells[Math.floor(Math.random() * fertileCells.length)];
-            const [row, col] = [randomCell.row, randomCell.col];
-            const cell = grid.children[row * gridSize + col];
-            if (eventType === 'lightning') {
-                cell.textContent = '⚡';
-                cell.classList.add('lightning');
-                gameState[row][col].content = 'lightning';
-                showRain();
-            } else {
-                cell.textContent = '❄';
-                cell.classList.add('frozen');
-                gameState[row][col].content = 'frozen';
-                showSnow();
-            }
-        }
-    }
-    weatherTimeout = setTimeout(checkWeather, 5000); // Повторяем проверку
-}
-
-// Имитация дождя
-function showRain() {
-    rainContainer.innerHTML = '';
-    thunderSound.play();
-    rainSound.play();
-    for (let i = 0; i < 50; i++) {
-        const drop = document.createElement('span');
-        drop.className = 'drop';
-        drop.textContent = '💧';
-        drop.style.left = `${Math.random() * 100}vw`;
-        drop.style.animationDelay = `${Math.random() * 2}s`;
-        rainContainer.appendChild(drop);
-    }
-    setTimeout(stopWeather, 5000); // Дождь длится 5 секунд
-}
-
-// Имитация снега
-function showSnow() {
-    snowContainer.innerHTML = '';
-    blizzardSound.play();
-    for (let i = 0; i < 50; i++) {
-        const flake = document.createElement('span');
-        flake.className = 'flake';
-        flake.textContent = '❄';
-        flake.style.left = `${Math.random() * 100}vw`;
-        flake.style.animationDelay = `${Math.random() * 2}s`;
-        snowContainer.appendChild(flake);
-    }
-    setTimeout(stopWeather, 5000); // Снег длится 5 секунд
-}
-
-// Остановка погодных эффектов
-function stopWeather() {
-    rainContainer.innerHTML = '';
-    snowContainer.innerHTML = '';
-    thunderSound.pause();
-    thunderSound.currentTime = 0;
-    rainSound.pause();
-    rainSound.currentTime = 0;
-    blizzardSound.pause();
-    blizzardSound.currentTime = 0;
+    // Пустая функция, так как убраны молнии и заморозки
+    console.log('Weather events disabled');
 }
 
 // Старт игры
